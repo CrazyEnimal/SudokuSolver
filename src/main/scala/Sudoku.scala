@@ -20,6 +20,11 @@ object Sudoku extends SudokuSolver {
     else bruteforceSolve(field)
   }
 
+  def justSimpleSolve(input: Seq[String]): Field = {
+    val field = Field.init(input)
+    simpleSolve(field)
+  }
+
   private def nextCells(field: Field): Seq[Cell] = {
     field.cells
       .filter(_.forecast.nonEmpty)
@@ -166,12 +171,7 @@ object Field {
   }
 
   def doStepWithProcess(field: Field, cell: Cell): Field = {
-    val newField = field.cells.foldLeft(Field(Seq.empty[Cell]))(
-      (acc, nCell) =>
-        if(cell.coordinates == nCell.coordinates)
-          acc.addCell(nCell.copy(number = nCell.forecast.head, forecast = nCell.forecast.tail))
-        else acc.addCell(nCell)
-    )
+    val newField = doStep(field, cell)
 
     @tailrec
     def loop(f1: Field, f2: Field): Field = {
